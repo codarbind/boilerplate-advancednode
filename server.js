@@ -28,7 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
-
+  function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect('/');
+  };
   // Be sure to change the title
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
@@ -44,7 +49,7 @@ myDB(async client => {
     res.redirect('/profile');
   });
 
-  app.route('/profile').get(passport.authenticate('local',{ failureRedirect: '/', }),(req, res) => {
+  app.route('/profile').get(ensureAuthenticated,(req, res) => {
     // Change the response to render the Pug template
     res.render('profile', {  });
   });
