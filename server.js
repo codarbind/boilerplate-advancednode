@@ -51,7 +51,7 @@ myDB(async client => {
 
   app.route('/profile').get(ensureAuthenticated,(req, res) => {
     // Change the response to render the Pug template
-    res.render('profile', {  });
+    res.render('profile', { username : req.user.username });
   });
 passport.serializeUser((user, done) => {
   done(null, user._id);
