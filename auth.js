@@ -2,6 +2,7 @@ const passport = require('passport');
 const { ObjectID } = require('mongodb');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local');
+const GitHubStrategy = require('passport-github').Strategy;
 
 module.exports = function (app, myDataBase) {
 
@@ -30,4 +31,15 @@ passport.serializeUser((user, done) => {
       return done(null, user);
     });
   }));
+
+  passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: 'https://boilerplate-advancednode-b0kb.onrender.com/auth/github/callback'
+  },
+    function(accessToken, refreshToken, profile, cb) {
+      console.log(profile);
+      //Database logic here with callback containing your user object
+    }
+  ));
 }
