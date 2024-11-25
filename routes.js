@@ -16,10 +16,19 @@ module.exports = function (app, myDataBase) {
       title: 'Connected to Database',
       message: 'Please login',
       showLogin: true,
-      showRegistration: true
+      showRegistration: true,
+      showSocialAuth: true
     });
   });
+  app.route('/auth/github/callback').get(passport.authenticate('github',{ failureRedirect: '/', }),(req, res) => {
 
+    res.redirect('/profile');
+  });
+
+   app.route('/auth/github').get(passport.authenticate('github',{ failureRedirect: '/', }),(req, res) => {
+
+ 
+  }); 
   app.route('/register')
   .post((req, res, next) => {
     myDataBase.findOne({ username: req.body.username }, (err, user) => {
