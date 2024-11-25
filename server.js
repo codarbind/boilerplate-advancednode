@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
+const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
@@ -53,9 +54,10 @@ myDB(async client => {
       } else if (user) {
         res.redirect('/');
       } else {
+        const hash = bcrypt.hashSync(req.body.password, 12);
         myDataBase.insertOne({
           username: req.body.username,
-          password: req.body.password
+          password: hash
         },
           (err, doc) => {
             if (err) {
@@ -77,6 +79,10 @@ myDB(async client => {
   );
 
   app.route('/login').post(passport.authenticate('local',{ failureRedirect: '/', }),(req, res) => {
+    
+    if (!bcrypt.compareSync(req.body.password, req.user.password)) { 
+      return done(null, false);
+    }
     // Change the response to render the Pug template
     res.redirect('/profile');
   });
